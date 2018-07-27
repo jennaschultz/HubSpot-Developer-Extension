@@ -38,4 +38,10 @@ If you're fixing a bug in master that isn't a major change, feel free to commit 
 
 If you have any questions you can find @JonMcLaren @williamspiro and @GonzaloTorreras in our channel in the HubSpot Design & Developer Slack https://hubspotdev.slack.com/messages/CBBAW6Z3R
 
+## Contributor wall of Fame
+We plan to highlight and encourage contributors for their efforts toward the extension in different ways - in the options screen of the extension as well as here. We're still concepting out some things to reward/how to do rewards, but one area we felt made sense to reward were any features or tweaks from the extension that make it into HubSpot's core. When a feature becomes part of the core that means HubSpot's developers thought the change was worth re-creating on their end. When this happens we have to remove the feature from the extension to prevent conflicts. 
+
+
+
 [Privacy Policy](https://github.com/williamspiro/HubSpot-Developer-Extension/wiki/Privacy-Policy)
+
