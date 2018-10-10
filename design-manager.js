@@ -4,8 +4,58 @@ $(document).ready(function() {
     /*getSelected might be deprecated need to review*/
     var currentScreen = "";
     var devMenu = false;
+
+    var waitForEl = function(selector, callback) {
+    /*This needs to be modified to not run forever if item is never detected.*/
+    	
+      if ($(selector).text().length) {
+        callback();
+      } else {
+        setTimeout(function() {
+          waitForEl(selector, callback);
+        }, 100);
+      }
+    };
+
+    function setTitle(siteName){
+        var portal = siteName.replace("www.","");
+        if(currentScreen == "design-manager"){
+            document.title = "🎨DM|"+portal+"|HS";
+        }
+        else if(currentScreen == "content-staging"){
+            document.title = "🎭CS|"+portal+"|HS";
+        }
+        else if(currentScreen == "dashboard"){
+            document.title = "📊Da|"+portal+"|HS";
+        }
+        else if(currentScreen == "website-pages"){
+            document.title = "📑WP|"+portal+"|HS";
+        }
+        else if(currentScreen == "landing-pages"){
+            document.title = "📄LP|"+portal+"|HS";
+        }
+        else if(currentScreen == "file-manager"){
+            document.title = "📁FM|"+portal+"|HS";
+        }
+        else if(currentScreen == "hubdb"){
+            document.title = "📦DB|"+portal+"|HS";
+        }
+        else if(currentScreen == "settings"){
+            document.title = "⚙️Se|"+portal+"|HS";
+        }
+        else if(currentScreen == "navigation-settings"){
+            document.title = "🗺️Na|"+portal+"|HS";
+        }
+        else if(currentScreen == "blog"){
+            document.title = "📰Bl|"+portal+"|HS";
+        }
+        else if(currentScreen =="url-mappings"){
+            document.title = "🔀UM|"+portal+"|HS";   
+        }
+    }
     //console.log("Current URL: ",tabUrl);
-    if (~tabUrl.indexOf("app.hubspot.com")) {
+    const appUrl = ~tabUrl.indexOf("app.hubspotqa.com") ? "app.hubspotqa.com" : "app.hubspot.com";
+    if (~tabUrl.indexOf(appUrl)) {
         //console.log("This is the hubspot backend.");
         chrome.storage.sync.get([
             'uitweaks'
@@ -34,9 +84,40 @@ $(document).ready(function() {
                     $("body").addClass("ext-dark-theme");
                 }
             });
-
-
         }
+        if (~tabUrl.indexOf("/staging/")) {
+            currentScreen = 'content-staging';
+        }
+        if (~tabUrl.indexOf("/reports-dashboard/")) {
+            currentScreen = 'dashboard';
+        }
+        if(~tabUrl.indexOf("/pages/")){
+            if(~tabUrl.indexOf("/site/")){
+                currentScreen = "website-pages";
+            }
+            else if(~tabUrl.indexOf("/landing/")){
+                currentScreen = "landing-pages";
+            }
+        }
+        if (~tabUrl.indexOf("/file-manager-beta/")) {
+            currentScreen = "file-manager";
+        }
+        if (~tabUrl.indexOf("/hubdb/")) {
+            currentScreen = "hubdb";
+        }
+        if (~tabUrl.indexOf("/settings/")) {
+            currentScreen = 'settings';
+            if (~tabUrl.indexOf("/navigation")) {
+                currentScreen = "navigation-settings";
+            }
+        }
+        if(~tabUrl.indexOf("/blog/")){
+           currentScreen = "blog"; 
+        }
+        if(~tabUrl.indexOf("/url-mappings")){
+           currentScreen = "url-mappings"; 
+        }
+        
 
 
 
@@ -47,11 +128,22 @@ $(document).ready(function() {
                 /*detect HS nav bar version*/
                 var navVersion;
                 if ($("#hs-nav-v3").length) {
-                    //console.log("Nav V3 detected.");
+                    console.log("Nav V3 detected.");
                     navVersion = 3;
                 } else if ($("#hs-nav-v4").length) {
-                    //console.log("Nav V4 detected.");
+                    console.log("Nav V4 detected.");
+                  
                     navVersion = 4;
+                }
+                if(navVersion === 3){
+                    waitForEl(".nav-domain", function() {
+                        setTitle($(".nav-domain").text());
+                    });
+
+                }else if(navVersion === 4){
+                    waitForEl(".account-name", function() {
+                        setTitle($(".account-name").text());
+                    });
                 }
 
                 function generateDevMenuItem(version, buttonLabel, hubId, url) {
@@ -95,6 +187,10 @@ $(document).ready(function() {
                     
                     return html;
 
+                }
+
+                function generateAppUrl(path) {
+                    return 'https://' + appUrl + path;
                 }
 
 
@@ -197,7 +293,7 @@ $(document).ready(function() {
                         if ($("#hs-nav-v4 .logo > a").attr("href").length) {
                             //console.log("Exists!");
 
-                            hubId = $("#hs-nav-v4 .logo > a").attr("href").replace("https://app.hubspot.com/reports-dashboard/", "").replace("/home", "");
+                            hubId = $("#hs-nav-v4 .logo > a").attr("href").replace(generateAppUrl("/reports-dashboard/"), "").replace("/home", "");
                             if (hubId) {
                                 clearInterval(checkExist);
                                 generateDevMenu(4, hubId);
@@ -221,6 +317,7 @@ $(document).ready(function() {
 
     } else if (~tabUrl.indexOf("designers.hubspot.com/docs/")) {
         //console.log("Viewing HubSpot Documentation");
+        currentScreen="docs";
 
 
     } else {
