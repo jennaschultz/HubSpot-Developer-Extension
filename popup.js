@@ -127,12 +127,6 @@ var developerTools = {
             }, 4000);
         });
 
-
-
-
-
-
-
     },
     getSettings: function() {
         chrome.storage.sync.get(["darktheme"], function(items) {
